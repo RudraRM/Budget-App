@@ -294,24 +294,42 @@ const Transactions = {
 
         // Show preview
         previewBox.innerHTML = '';
-        previewBox.appendChild(el('h4', { style: 'margin-top:16px;margin-bottom:12px;' }, `Found ${txns.length} transactions`));
-        const table = el('table', { class: 'data-table', style: 'font-size:0.85rem;' });
-        table.innerHTML = `<thead><tr><th>Date</th><th>Description</th><th>Category</th><th>Amount</th></tr></thead>`;
+        previewBox.appendChild(el('h4', { style: 'margin-top:16px;margin-bottom:12px;font-size:1rem;' }, `✓ Found ${txns.length} transactions`));
+
+        const tableWrap = el('div', { class: 'table-wrap', style: 'margin-bottom:16px;' });
+        const table = el('table', { class: 'data-table', style: 'font-size:0.85rem;width:100%;' });
+
+        const thead = el('thead');
+        const headerRow = el('tr');
+        ['Date', 'Description', 'Category', 'Amount'].forEach(h => {
+          headerRow.appendChild(el('th', {}, h));
+        });
+        thead.appendChild(headerRow);
+        table.appendChild(thead);
+
         const tbody = el('tbody');
         txns.slice(0, 5).forEach(t => {
           const tr = el('tr');
-          tr.innerHTML = `
-            <td>${t.date}</td>
-            <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(t.description)}</td>
-            <td><span class="pill pill-cat">${categoryIcon(t.category)} ${t.category}</span></td>
-            <td>${fmtMoney(t.amount)}</td>
-          `;
+          const dateCell = el('td', {}, t.date);
+          const descCell = el('td', { style: 'max-width:150px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;' }, escapeHtml(t.description));
+          const catCell = el('td', {});
+          const catPill = el('span', { class: 'pill pill-cat' });
+          catPill.appendChild(document.createTextNode(categoryIcon(t.category) + ' ' + t.category));
+          catCell.appendChild(catPill);
+          const amtCell = el('td', { style: 'text-align:right;' }, fmtMoney(t.amount));
+
+          tr.appendChild(dateCell);
+          tr.appendChild(descCell);
+          tr.appendChild(catCell);
+          tr.appendChild(amtCell);
           tbody.appendChild(tr);
         });
         table.appendChild(tbody);
-        previewBox.appendChild(table);
+        tableWrap.appendChild(table);
+        previewBox.appendChild(tableWrap);
+
         if (txns.length > 5) {
-          previewBox.appendChild(el('p', { style: 'color:var(--text-dim);font-size:0.8rem;margin-top:8px;' }, `... and ${txns.length - 5} more`));
+          previewBox.appendChild(el('p', { style: 'color:var(--text-dim);font-size:0.8rem;margin-top:8px;margin-bottom:16px;' }, `... and ${txns.length - 5} more`));
         }
 
         // Import button

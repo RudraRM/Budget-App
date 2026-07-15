@@ -90,14 +90,15 @@ const Budgets = {
         categoryTotals[t.category] = (categoryTotals[t.category] || 0) + t.amount;
       });
 
-      const chartContainer = el('div', { style: 'position:relative;height:300px;margin:16px 0;' });
+      const chartContainer = el('div', { style: 'position:relative;height:350px;margin:16px 0;' });
       chartSection.appendChild(chartContainer);
 
       // Create pie chart using Chart.js
-      const ctx = el('canvas');
+      const canvasId = 'budgetChartCanvas_' + Date.now();
+      const ctx = el('canvas', { id: canvasId, style: 'width:100%;height:100%;' });
       chartContainer.appendChild(ctx);
 
-      setTimeout(() => {
+      requestAnimationFrame(() => {
         const labels = Object.keys(categoryTotals);
         const data = Object.values(categoryTotals);
         const colors = [
@@ -105,43 +106,61 @@ const Budgets = {
           '#F7DC6F', '#BB8FCE', '#85C1E2', '#F8B88B', '#A2D5C6'
         ];
 
-        new Chart(ctx, {
-          type: 'pie',
-          data: {
-            labels: labels,
-            datasets: [{
-              data: data,
-              backgroundColor: colors.slice(0, labels.length),
-              borderColor: 'var(--surface-alt)',
-              borderWidth: 2
-            }]
-          },
-          options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            plugins: {
-              legend: {
-                position: 'bottom',
-                labels: {
-                  color: 'var(--text-dim)',
-                  font: { size: 12 }
-                }
-              },
-              tooltip: {
-                callbacks: {
-                  label: function(context) {
-                    const label = context.label || '';
-                    const value = fmtMoney(context.parsed);
-                    const total = context.dataset.data.reduce((a, b) => a + b, 0);
-                    const pct = ((context.parsed / total) * 100).toFixed(1);
-                    return `${label}: ${value} (${pct}%)`;
+        const getComputedColor = (variable) => {
+          const root = document.documentElement;
+          return getComputedStyle(root).getPropertyValue(variable).trim() || '#666';
+        };
+
+        const textColor = getComputedColor('--text-dim');
+        const borderColor = getComputedColor('--panel-border');
+
+        try {
+          new Chart(ctx, {
+            type: 'pie',
+            data: {
+              labels: labels,
+              datasets: [{
+                data: data,
+                backgroundColor: colors.slice(0, labels.length),
+                borderColor: borderColor,
+                borderWidth: 2
+              }]
+            },
+            options: {
+              responsive: true,
+              maintainAspectRatio: false,
+              plugins: {
+                legend: {
+                  position: 'bottom',
+                  labels: {
+                    color: textColor,
+                    font: { size: 12 },
+                    padding: 15
+                  }
+                },
+                tooltip: {
+                  backgroundColor: 'rgba(0,0,0,0.8)',
+                  padding: 12,
+                  titleFont: { size: 12 },
+                  bodyFont: { size: 12 },
+                  callbacks: {
+                    label: function(context) {
+                      const label = context.label || '';
+                      const value = context.parsed;
+                      const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                      const pct = ((value / total) * 100).toFixed(1);
+                      return `${label}: $${value.toFixed(2)} (${pct}%)`;
+                    }
                   }
                 }
               }
             }
-          }
-        });
-      }, 0);
+          });
+        } catch (e) {
+          console.error('Chart error:', e);
+          chartContainer.innerHTML = '<div style="color:var(--text-dim);padding:16px;">Error rendering chart</div>';
+        }
+      });
     }
 
     container.appendChild(chartSection);
