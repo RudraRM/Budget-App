@@ -1,0 +1,111 @@
+/* ==========================================================================
+   BudgetMind AI — Design Tokens
+   Aesthetic: financial ledger / trading-terminal. Deep ink base, one signal
+   color reserved exclusively for positive money movement, tabular mono
+   numerals for genuine statement-like alignment of figures.
+   ========================================================================== */
+
+:root {
+  /* Dark (default) */
+  --ink: #0B0F14;
+  --panel: #121821;
+  --panel-hover: #1C2530;
+  --panel-border: #232E3B;
+  --text: #EDEFF2;
+  --text-dim: #8A94A3;
+  --text-faint: #57626F;
+
+  --signal-green: #00D67E;
+  --signal-green-dim: rgba(0, 214, 126, 0.14);
+  --loss-red: #FF5C5C;
+  --loss-red-dim: rgba(255, 92, 92, 0.14);
+  --info-blue: #5B8CFF;
+  --info-blue-dim: rgba(91, 140, 255, 0.14);
+  --warn-amber: #FFB020;
+  --warn-amber-dim: rgba(255, 176, 32, 0.14);
+
+  --font-display: 'Space Grotesk', 'Inter', sans-serif;
+  --font-body: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'JetBrains Mono', 'SF Mono', Consolas, monospace;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 16px;
+
+  --shadow-card: 0 1px 0 rgba(255,255,255,0.03) inset, 0 8px 24px rgba(0,0,0,0.35);
+  --shadow-elevated: 0 20px 60px rgba(0,0,0,0.5);
+
+  --ease: cubic-bezier(0.16, 1, 0.3, 1);
+  --dur-fast: 140ms;
+  --dur-base: 220ms;
+  --dur-slow: 420ms;
+
+  color-scheme: dark;
+}
+
+[data-theme="light"] {
+  --ink: #F5F6F8;
+  --panel: #FFFFFF;
+  --panel-hover: #F0F2F5;
+  --panel-border: #E1E5EA;
+  --text: #12161C;
+  --text-dim: #5B6472;
+  --text-faint: #97A0AB;
+
+  --signal-green: #00A868;
+  --signal-green-dim: rgba(0, 168, 104, 0.10);
+  --loss-red: #E0393E;
+  --loss-red-dim: rgba(224, 57, 62, 0.10);
+  --info-blue: #3F6FE0;
+  --info-blue-dim: rgba(63, 111, 224, 0.10);
+  --warn-amber: #C97F0A;
+  --warn-amber-dim: rgba(201, 127, 10, 0.10);
+
+  --shadow-card: 0 1px 0 rgba(255,255,255,0.6) inset, 0 8px 24px rgba(20,30,40,0.06);
+  --shadow-elevated: 0 20px 60px rgba(20,30,40,0.12);
+
+  color-scheme: light;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--ink);
+  color: var(--text);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+}
+
+body {
+  min-height: 100vh;
+  transition: background var(--dur-base) var(--ease), color var(--dur-base) var(--ease);
+}
+
+.mono { font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+
+::selection { background: var(--signal-green-dim); color: var(--signal-green); }
+
+a { color: inherit; }
+
+/* Scrollbars */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--panel-border); border-radius: 8px; }
+::-webkit-scrollbar-thumb:hover { background: var(--text-faint); }
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+:focus-visible {
+  outline: 2px solid var(--info-blue);
+  outline-offset: 2px;
+  border-radius: var(--radius-sm);
+}

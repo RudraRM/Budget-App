@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BudgetMind AI — Smart Budgeting Without the AI Bill</title>
+<meta name="description" content="BudgetMind AI tracks income, expenses, budgets and savings goals, then gives you rule-based financial insights instantly — no API key, no subscription to a language model, no data leaving your account.">
+<meta name="theme-color" content="#0B0F14">
+<link rel="manifest" href="/manifest.json">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><rect width=%22100%22 height=%22100%22 rx=%2222%22 fill=%22%2300D67E%22/><text x=%2250%22 y=%2266%22 font-size=%2255%22 text-anchor=%22middle%22 fill=%22%23041F14%22 font-family=%22monospace%22 font-weight=%22bold%22>$</text></svg>">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/css/tokens.css">
+<link rel="stylesheet" href="/static/css/landing.css">
+</head>
+<body>
+
+<nav class="nav">
+  <div class="brand"><span class="brand-mark">$</span> BudgetMind AI</div>
+  <div class="nav-links">
+    <a href="#features">Features</a>
+    <a href="#ai">AI Assistant</a>
+    <a href="#reports">Reports</a>
+    <a href="/app" class="btn btn-ghost">Log in</a>
+    <a href="/app" class="btn btn-primary">Get started free</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div>
+    <div class="eyebrow">RULE-BASED ENGINE · NO API KEY REQUIRED</div>
+    <h1>Every dollar,<br>reconciled by <span class="accent">logic</span>, not a language model.</h1>
+    <p class="lede">BudgetMind AI tracks your income, expenses, and goals, then runs real statistical analysis on your own history to tell you what's actually happening with your money — instantly, locally, and privately.</p>
+    <div class="hero-cta">
+      <a href="/app" class="btn btn-primary btn-lg">Start budgeting free</a>
+      <a href="#ai" class="btn btn-ghost btn-lg">See how the AI works</a>
+    </div>
+    <div class="hero-note">No credit card. No AI API key. No spending data leaves your account.</div>
+  </div>
+
+  <div class="hero-preview">
+    <div class="hero-preview-header">
+      <div class="hero-preview-dots"><span></span><span></span><span></span></div>
+      <span style="font-family:var(--font-mono);font-size:0.75rem;color:var(--text-faint)">dashboard.live</span>
+    </div>
+    <div class="hero-stat-row">
+      <div class="hero-stat"><div class="label">Net Cash Flow</div><div class="value mono" style="color:var(--signal-green)">+$1,284</div></div>
+      <div class="hero-stat"><div class="label">Health Score</div><div class="value mono">78</div></div>
+    </div>
+    <div class="hero-stat-row">
+      <div class="hero-stat"><div class="label">Budget Remaining</div><div class="value mono">$612</div></div>
+      <div class="hero-stat"><div class="label">Savings</div><div class="value mono">$9,340</div></div>
+    </div>
+    <div class="hero-chart-mock" id="heroChart"></div>
+  </div>
+</header>
+
+<div class="ticker-wrap">
+  <div class="ticker-track" id="landingTicker"></div>
+</div>
+
+<section class="section" id="features">
+  <div class="section-head">
+    <div class="kicker">Everything in one ledger</div>
+    <h2>Built like a finance app, not a spreadsheet template.</h2>
+    <p>Transactions, budgets, goals, and reports — connected, not siloed.</p>
+  </div>
+  <div class="grid-features">
+    <div class="feature-card">
+      <div class="feature-icon">◈</div>
+      <h3>Real-time dashboard</h3>
+      <p>Balance, income, expenses, savings, and cash flow update live as you log transactions — with a financial health score to match.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">▤</div>
+      <h3>Transactions that make sense</h3>
+      <p>Ten built-in categories, recurring entries, and instant search and filtering by date, category, or amount.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">▦</div>
+      <h3>Budgets with teeth</h3>
+      <p>Daily, weekly, and monthly limits with live progress bars and overspending alerts before you go over.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">◎</div>
+      <h3>Savings goals that project forward</h3>
+      <p>Set a target, and BudgetMind calculates your estimated completion date and the monthly contribution to get there.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">▧</div>
+      <h3>Reports you can export</h3>
+      <p>Weekly, monthly, and yearly breakdowns of spending trends and income vs. expenses, exportable as PDF or CSV.</p>
+    </div>
+    <div class="feature-card">
+      <div class="feature-icon">✦</div>
+      <h3>Bonus tools</h3>
+      <p>Multi-currency support, a bill calendar, subscription tracker, debt payoff calculator, and printable reports.</p>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="ai">
+  <div class="ai-showcase">
+    <div>
+      <div class="privacy-badge">◍ Runs entirely on your own data</div>
+      <h2 style="font-family:var(--font-display);font-size:2rem;letter-spacing:-0.01em;margin:0 0 14px;">The "AI Assistant" is just very good math.</h2>
+      <p style="color:var(--text-dim);line-height:1.6;font-size:1rem;">No OpenAI key. No monthly AI subscription. Every insight below comes from statistical analysis of your own transaction history — z-scores for anomaly detection, weighted composite scoring for financial health, and linear projection for forecasts.</p>
+    </div>
+    <div>
+      <div class="ai-line"><div class="ai-line-dot"></div><div class="ai-line-text"><strong>Spending pattern analysis</strong><span>Category breakdowns, 30-day trend direction, and top spending categories.</span></div></div>
+      <div class="ai-line"><div class="ai-line-dot"></div><div class="ai-line-text"><strong>Budget outcome prediction</strong><span>Projects your month-end total from your current daily spend rate.</span></div></div>
+      <div class="ai-line"><div class="ai-line-dot"></div><div class="ai-line-text"><strong>Unusual spending detection</strong><span>Flags transactions that are statistical outliers within their category.</span></div></div>
+      <div class="ai-line"><div class="ai-line-dot"></div><div class="ai-line-text"><strong>Financial health score</strong><span>A 0–100 composite of savings rate, budget adherence, and volatility.</span></div></div>
+      <div class="ai-line"><div class="ai-line-dot"></div><div class="ai-line-text"><strong>Emergency fund & savings targets</strong><span>Recommends a buffer size and monthly savings rate from your real numbers.</span></div></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="reports">
+  <div class="section-head">
+    <div class="kicker">Reporting</div>
+    <h2>See the shape of your money over time.</h2>
+    <p>Weekly check-ins, monthly reviews, and yearly retrospectives — all exportable.</p>
+  </div>
+  <div class="grid-features">
+    <div class="feature-card"><div class="feature-icon">↗</div><h3>Spending trends</h3><p>Track whether spending is rising, falling, or holding steady month over month.</p></div>
+    <div class="feature-card"><div class="feature-icon">◫</div><h3>Category breakdowns</h3><p>See exactly where every dollar of expense goes, ranked by share of total spend.</p></div>
+    <div class="feature-card"><div class="feature-icon">⬒</div><h3>Income vs. expenses</h3><p>A clear side-by-side of what came in against what went out, period over period.</p></div>
+  </div>
+</section>
+
+<div class="cta-band">
+  <h2>Start reconciling your finances today.</h2>
+  <p>Free, private, and running the moment you sign up — no API keys required.</p>
+  <a href="/app" class="btn btn-primary btn-lg">Create your account</a>
+</div>
+
+<footer>
+  <div>© 2026 BudgetMind AI. Built for clarity, not upsells.</div>
+  <div>Privacy-first · Local rule-based insights · No ads</div>
+</footer>
+
+<script>
+  const tickerItems = [
+    {t:'GROCERIES', v:'-$84.20', c:'down'}, {t:'SALARY', v:'+$4,200.00', c:'up'},
+    {t:'RENT', v:'-$1,450.00', c:'down'}, {t:'SAVINGS', v:'+$600.00', c:'up'},
+    {t:'DINING', v:'-$32.50', c:'down'}, {t:'INVESTMENT', v:'+$210.00', c:'up'},
+    {t:'UTILITIES', v:'-$142.00', c:'down'}, {t:'FREELANCE', v:'+$850.00', c:'up'},
+  ];
+  const track = document.getElementById('landingTicker');
+  const html = tickerItems.map(i => `<span class="ticker-item ${i.c}">${i.t} <strong>${i.v}</strong></span>`).join('');
+  track.innerHTML = html + html;
+
+  // Simple animated line for hero chart mock
+  const chartEl = document.getElementById('heroChart');
+  const svgNS = "http://www.w3.org/2000/svg";
+  const svg = document.createElementNS(svgNS, "svg");
+  svg.setAttribute("viewBox", "0 0 300 100");
+  svg.setAttribute("preserveAspectRatio", "none");
+  svg.style.width = "100%"; svg.style.height = "100%";
+  const pts = [70,60,65,50,55,40,45,30,35,20,25,15];
+  const path = pts.map((p,i)=>`${i===0?'M':'L'}${(i/(pts.length-1))*300},${100-p}`).join(' ');
+  const line = document.createElementNS(svgNS, "path");
+  line.setAttribute("d", path);
+  line.setAttribute("fill", "none");
+  line.setAttribute("stroke", "#00D67E");
+  line.setAttribute("stroke-width", "2");
+  svg.appendChild(line);
+  chartEl.appendChild(svg);
+</script>
+
+</body>
+</html>
