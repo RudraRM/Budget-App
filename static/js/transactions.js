@@ -19,9 +19,17 @@ const Transactions = {
   _header() {
     const head = el('div', { style: 'display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:12px;' });
     head.appendChild(el('h2', { style: 'font-family:var(--font-display);margin:0;font-size:1.4rem;' }, 'Transactions'));
+    const btnGroup = el('div', { style: 'display:flex;gap:12px;flex-wrap:wrap;' });
+
     const addBtn = el('button', { class: 'btn btn-primary' }, '+ Add transaction');
     addBtn.onclick = () => this._openModal();
-    head.appendChild(addBtn);
+    btnGroup.appendChild(addBtn);
+
+    const uploadBtn = el('button', { class: 'btn btn-secondary' }, '📤 Upload Credit/Debit Statement');
+    uploadBtn.onclick = () => this._openUploadModal();
+    btnGroup.appendChild(uploadBtn);
+
+    head.appendChild(btnGroup);
     return head;
   },
 
@@ -205,6 +213,134 @@ const Transactions = {
       }
     });
     box.appendChild(saveBtn);
+
+    overlay.appendChild(box);
+    document.body.appendChild(overlay);
+    requestAnimationFrame(() => overlay.classList.add('open'));
+
+    function close() {
+      overlay.classList.remove('open');
+      setTimeout(() => overlay.remove(), 220);
+    }
+    overlay.addEventListener('click', e => { if (e.target === overlay) close(); });
+  },
+
+  _openUploadModal() {
+    const overlay = el('div', { class: 'modal-overlay' });
+    const box = el('div', { class: 'modal-box' });
+
+    box.appendChild(el('div', { class: 'modal-head' }, [
+      el('h3', {}, 'Upload Credit/Debit Statement'),
+      (() => { const b = el('button', { class: 'modal-close' }, '✕'); b.onclick = () => close(); return b; })()
+    ]));
+
+    const info = el('div', { style: 'color:var(--text-dim);font-size:0.9rem;margin-bottom:16px;' });
+    info.appendChild(el('p', {}, 'Supported formats: TXT, PDF, PNG, JPEG'));
+    info.appendChild(el('p', {}, 'The AI will analyze and categorize transactions automatically.'));
+    box.appendChild(info);
+
+    const fileInput = el('input', { type: 'file', accept: '.txt,.pdf,.png,.jpg,.jpeg' });
+    const fileField = el('div', { class: 'field' });
+    fileField.appendChild(el('label', {}, 'Select file'));
+    fileField.appendChild(fileInput);
+    box.appendChild(fileField);
+
+    const errorBox = el('div');
+    const progressBox = el('div', { style: 'display:none;' });
+    const previewBox = el('div', { style: 'margin-top:16px;' });
+
+    box.appendChild(errorBox);
+    box.appendChild(progressBox);
+    box.appendChild(previewBox);
+
+    const uploadBtn = el('button', { class: 'btn btn-primary btn-block' }, 'Upload & Analyze');
+    uploadBtn.addEventListener('click', async () => {
+      errorBox.innerHTML = '';
+      previewBox.innerHTML = '';
+      if (!fileInput.files.length) {
+        errorBox.appendChild(el('div', { class: 'auth-alert' }, 'Please select a file.'));
+        return;
+      }
+
+      uploadBtn.disabled = true;
+      progressBox.style.display = '';
+      progressBox.innerHTML = '<div class="skeleton" style="height:60px;border-radius:8px;"></div>';
+
+      const formData = new FormData();
+      formData.append('file', fileInput.files[0]);
+
+      try {
+        const response = await fetch('/api/statements/upload', {
+          method: 'POST',
+          body: formData
+        });
+
+        if (!response.ok) {
+          const err = await response.json();
+          throw new Error(err.error || 'Upload failed');
+        }
+
+        const result = await response.json();
+        progressBox.innerHTML = '';
+
+        if (!result.ok) {
+          throw new Error(result.error);
+        }
+
+        const txns = result.transactions || [];
+        if (!txns.length) {
+          throw new Error('No transactions found in the file.');
+        }
+
+        // Show preview
+        previewBox.innerHTML = '';
+        previewBox.appendChild(el('h4', { style: 'margin-top:16px;margin-bottom:12px;' }, `Found ${txns.length} transactions`));
+        const table = el('table', { class: 'data-table', style: 'font-size:0.85rem;' });
+        table.innerHTML = `<thead><tr><th>Date</th><th>Description</th><th>Category</th><th>Amount</th></tr></thead>`;
+        const tbody = el('tbody');
+        txns.slice(0, 5).forEach(t => {
+          const tr = el('tr');
+          tr.innerHTML = `
+            <td>${t.date}</td>
+            <td style="max-width:200px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${escapeHtml(t.description)}</td>
+            <td><span class="pill pill-cat">${categoryIcon(t.category)} ${t.category}</span></td>
+            <td>${fmtMoney(t.amount)}</td>
+          `;
+          tbody.appendChild(tr);
+        });
+        table.appendChild(tbody);
+        previewBox.appendChild(table);
+        if (txns.length > 5) {
+          previewBox.appendChild(el('p', { style: 'color:var(--text-dim);font-size:0.8rem;margin-top:8px;' }, `... and ${txns.length - 5} more`));
+        }
+
+        // Import button
+        const importBtn = el('button', { class: 'btn btn-primary btn-block', style: 'margin-top:16px;' }, '✓ Import transactions');
+        importBtn.addEventListener('click', async () => {
+          importBtn.disabled = true;
+          try {
+            await API.post('/api/statements/import', { transactions: txns });
+            showToast(`${txns.length} transactions imported successfully!`, 'success');
+            close();
+            this.render(document.getElementById('viewContainer'));
+          } catch (e) {
+            errorBox.innerHTML = '';
+            errorBox.appendChild(el('div', { class: 'auth-alert' }, e.message));
+          } finally {
+            importBtn.disabled = false;
+          }
+        });
+        previewBox.appendChild(importBtn);
+
+      } catch (e) {
+        progressBox.style.display = 'none';
+        errorBox.innerHTML = '';
+        errorBox.appendChild(el('div', { class: 'auth-alert' }, e.message));
+      } finally {
+        uploadBtn.disabled = false;
+      }
+    });
+    box.appendChild(uploadBtn);
 
     overlay.appendChild(box);
     document.body.appendChild(overlay);

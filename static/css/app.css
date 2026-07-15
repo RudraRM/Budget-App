@@ -99,6 +99,8 @@
 .btn:active { transform: scale(0.97); }
 .btn-primary { background: var(--signal-green); color: #041F14; }
 .btn-primary:hover { background: #00F090; }
+.btn-secondary { background: var(--info-blue); color: white; }
+.btn-secondary:hover { background: #5DADE2; }
 .btn-ghost { background: transparent; border-color: var(--panel-border); color: var(--text); }
 .btn-ghost:hover { background: var(--panel-hover); }
 .btn-danger { background: var(--loss-red-dim); color: var(--loss-red); border-color: transparent; }
