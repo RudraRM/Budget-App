@@ -22,6 +22,7 @@ from backend.ai_engine import (
     detect_unusual_spending, personalized_tips, goal_projection
 )
 from backend.reports import build_report_data, csv_export
+from backend.statement_parser import parse_statement_file
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DB_PATH = os.path.join(BASE_DIR, "budgetmind.db")
@@ -36,6 +37,20 @@ CATEGORIES = [
     "Food", "Shopping", "Bills", "Transportation", "Entertainment",
     "Healthcare", "Education", "Salary", "Investments", "Other"
 ]
+
+# File upload configuration
+UPLOAD_FOLDER = os.path.join(BASE_DIR, 'uploads')
+ALLOWED_EXTENSIONS = {'txt', 'pdf', 'png', 'jpg', 'jpeg'}
+MAX_FILE_SIZE = 50 * 1024 * 1024  # 50MB
+
+if not os.path.exists(UPLOAD_FOLDER):
+    os.makedirs(UPLOAD_FOLDER)
+
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['MAX_CONTENT_LENGTH'] = MAX_FILE_SIZE
+
+def allowed_file(filename):
+    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 # ---------------------------------------------------------------------------
 # Database
@@ -438,6 +453,83 @@ def delete_transaction(txn_id):
     db.execute("DELETE FROM transactions WHERE id=? AND user_id=?", (txn_id, session["user_id"]))
     db.commit()
     return jsonify({"ok": True})
+
+
+@app.route("/api/statements/upload", methods=["POST"])
+@login_required
+def upload_statement():
+    if 'file' not in request.files:
+        return jsonify({"error": "No file provided"}), 400
+
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({"error": "No file selected"}), 400
+
+    if not allowed_file(file.filename):
+        return jsonify({"error": "File type not allowed. Supported: TXT, PDF, PNG, JPEG"}), 400
+
+    try:
+        filename = secure_filename(file.filename)
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S_")
+        filename = timestamp + filename
+        filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+
+        file.save(filepath)
+
+        # Parse the statement file
+        transactions = parse_statement_file(filepath, file.filename)
+
+        if not transactions:
+            return jsonify({"error": "No transactions found in the file. Please check the file format."}), 400
+
+        return jsonify({
+            "ok": True,
+            "transactions": transactions,
+            "count": len(transactions)
+        })
+
+    except Exception as e:
+        return jsonify({"error": f"Error processing file: {str(e)}"}), 500
+
+
+@app.route("/api/statements/import", methods=["POST"])
+@login_required
+def import_statement_transactions():
+    data = request.get_json(force=True, silent=True) or {}
+    transactions_data = data.get("transactions", [])
+
+    if not transactions_data:
+        return jsonify({"error": "No transactions provided"}), 400
+
+    db = get_db()
+    imported_count = 0
+
+    for txn in transactions_data:
+        try:
+            ttype = txn.get("type", "expense")
+            category = txn.get("category", "Other")
+            amount = float(txn.get("amount", 0))
+            note = (txn.get("description", "") or "").strip()[:500]
+            txn_date = txn.get("date", date.today().isoformat())
+
+            if ttype not in ("income", "expense"):
+                ttype = "expense"
+            if category not in CATEGORIES:
+                category = "Other"
+            if amount <= 0:
+                continue
+
+            db.execute(
+                "INSERT INTO transactions (user_id, type, category, amount, note, txn_date, recurring) "
+                "VALUES (?, ?, ?, ?, ?, ?, ?)",
+                (session["user_id"], ttype, category, amount, note, txn_date, "none")
+            )
+            imported_count += 1
+        except Exception as e:
+            continue
+
+    db.commit()
+    return jsonify({"ok": True, "imported": imported_count})
 
 
 @app.route("/api/categories", methods=["GET"])
